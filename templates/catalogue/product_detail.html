@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{ product }}{% endblock %}
+{% block content %}
+<div class="head"><h1>{{ product }}{% if not product.is_active %} <span class="tag">Inactive</span>{% endif %}</h1>
+  <div>
+    <a class="btn" href="{% url 'inventory:product_history' product.pk %}">Stock history</a>
+    {% if is_manager %}
+      {% if not has_history_here %}<a class="btn" href="{% url 'inventory:opening_stock' product.pk %}">Set opening stock</a>{% endif %}
+      <a class="btn primary" href="{% url 'catalogue:product_update' product.pk %}">Edit</a>
+    {% endif %}
+  </div>
+</div>
+<div class="grid2">
+  <section class="card">
+    <h2>Details</h2>
+    <dl>
+      <dt>Category</dt><dd>{{ product.category }}</dd>
+      <dt>Unit</dt><dd>{{ product.unit.name }}{% if product.is_weighed %} (weighed){% endif %}</dd>
+      <dt>SKU / barcode</dt><dd>{{ product.sku|default:"—" }} / {{ product.barcode|default:"—" }}</dd>
+      <dt>Supplier</dt><dd>{{ product.supplier|default:"—" }}</dd>
+      <dt>Retail price</dt><dd>KES {{ product.retail_price|floatformat:2 }}</dd>
+      <dt>Wholesale price</dt><dd>KES {{ product.wholesale_price|floatformat:2 }}{% if product.wholesale_min_qty %} from {{ product.wholesale_min_qty|floatformat:"-3" }} {{ product.unit }}{% endif %}</dd>
+      <dt>Max discount</dt><dd>{{ product.max_discount_percent|floatformat:"-2" }}%</dd>
+      {% if is_manager %}
+      <dt>Buying price</dt><dd>KES {{ product.buying_price|floatformat:2 }}</dd>
+      <dt>Average cost</dt><dd>KES {{ product.average_cost|floatformat:2 }}</dd>
+      <dt>Retail margin</dt><dd>{% if product.retail_margin is not None %}{{ product.retail_margin|floatformat:1 }}%{% else %}—{% endif %}</dd>
+      {% endif %}
+      <dt>Low stock at</dt><dd>{{ product.low_stock_level|floatformat:"-3" }} {{ product.unit }}</dd>
+    </dl>
+  </section>
+  <section class="card">
+    <h2>Stock by branch</h2>
+    <table><tbody>
+      {% for s in stock %}<tr><td>{{ s.branch }}</td><td class="num">{{ s.quantity|floatformat:"-3" }} {{ product.unit }}</td></tr>
+      {% empty %}<tr><td>No stock recorded yet.</td></tr>{% endfor %}
+    </tbody></table>
+    {% if is_manager %}
+    <h2>Price changes</h2>
+    <table><thead><tr><th>When</th><th>Field</th><th class="num">Old</th><th class="num">New</th><th>By</th></tr></thead><tbody>
+      {% for h in price_history %}<tr><td>{{ h.created_at|date:"d M Y H:i" }}</td><td>{{ h.field|cut:"_"|title }}</td><td class="num">{{ h.old_value|default:"—" }}</td><td class="num">{{ h.new_value }}</td><td>{% if h.changed_by %}{{ h.changed_by }}{% else %}system{% endif %}</td></tr>
+      {% empty %}<tr><td colspan="5">No changes yet.</td></tr>{% endfor %}
+    </tbody></table>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

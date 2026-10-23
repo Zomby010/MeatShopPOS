@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Stock movements{% endblock %}
+{% block content %}
+<h1>Stock movements at {{ current_branch }}</h1>
+<form class="filters" method="get">
+  <select name="type" onchange="this.form.submit()"><option value="">All types</option>
+    {% for value, label in types %}<option value="{{ value }}" {% if request.GET.type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+</form>
+<div class="card">{% include "inventory/_movement_table.html" with movements=page show_product=True %}</div>
+{% if page.has_other_pages %}<p class="pager">
+  {% if page.has_previous %}<a href="?type={{ request.GET.type }}&page={{ page.previous_page_number }}">← Newer</a>{% endif %}
+  Page {{ page.number }} of {{ page.paginator.num_pages }}
+  {% if page.has_next %}<a href="?type={{ request.GET.type }}&page={{ page.next_page_number }}">Older →</a>{% endif %}
+</p>{% endif %}
+{% endblock %}

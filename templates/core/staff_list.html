@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Staff{% endblock %}
+{% block content %}
+<div class="head"><h1>Staff</h1><a class="btn primary" href="{% url 'core:staff_create' %}">+ New staff</a></div>
+<table class="card"><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Branch</th><th>Phone</th><th>PIN</th><th></th></tr></thead><tbody>
+{% for s in staff %}<tr class="{% if not s.user.is_active %}muted{% endif %}"><td>{{ s.display_name }}</td><td>{{ s.user.username }}</td><td>{{ s.get_role_display }}</td><td>{{ s.branch|default:"All" }}</td><td>{{ s.phone }}</td><td>{% if s.pin_hash %}Set{% else %}—{% endif %}</td>
+<td>{% if is_owner or s.role == "cashier" %}<a href="{% url 'core:staff_update' s.pk %}">Edit</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="7">No staff yet.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

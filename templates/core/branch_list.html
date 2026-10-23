@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Branches{% endblock %}
+{% block content %}
+<div class="head"><h1>Branches</h1><a class="btn primary" href="{% url 'core:branch_create' %}">+ New branch</a></div>
+<table class="card"><thead><tr><th>Code</th><th>Name</th><th>Location</th><th>Phone</th><th></th></tr></thead><tbody>
+{% for b in object_list %}<tr class="{% if not b.is_active %}muted{% endif %}"><td>{{ b.code }}</td><td>{{ b.name }}{% if b.is_main %} <span class="tag">Main</span>{% endif %}</td><td>{{ b.location }}</td><td>{{ b.phone }}</td><td><a href="{% url 'core:branch_update' b.pk %}">Edit</a></td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post" class="card form" novalidate>{% csrf_token %}
+  {% if form.non_field_errors %}<div class="msg msg-error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+  {% for field in form %}
+    {% if field.is_hidden %}{{ field }}{% else %}
+    <div class="field{% if field.errors %} has-error{% endif %}{% if field.field.widget.input_type == 'checkbox' %} check{% endif %}">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+      {% for e in field.errors %}<span class="error">{{ e }}</span>{% endfor %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  <div class="actions"><button class="btn primary" type="submit">Save</button> <a class="btn" href="javascript:history.back()">Cancel</a></div>
+</form>
+{% endblock %}

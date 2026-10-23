@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Import products{% endblock %}
+{% block content %}
+<h1>Import products</h1>
+<div class="card">
+  <p>Upload a CSV or Excel file with these columns: Product Name, Category, Buying Price, Retail Price, Wholesale Price, Current Stock Level, Low Stock Level At, Units Of Measure, Barcode, SKU. These match the Bizkit template.</p>
+  <p>Products are matched by name: existing ones are updated, new ones are created. A stock level becomes <strong>opening stock at {{ current_branch }}</strong>, but only for products with no stock history here yet. Correct existing stock with a recount.</p>
+  <p><a href="{% url 'catalogue:import_template' %}">Download the template</a></p>
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.file }} {% for e in form.file.errors %}<span class="error">{{ e }}</span>{% endfor %}
+    <button class="btn primary">Import</button>
+  </form>
+</div>
+{% if result %}
+<div class="card">
+  <h2>Result</h2>
+  <p>Created {{ result.created }}, updated {{ result.updated }}, opening stock recorded for {{ result.opening_stock }}.</p>
+  {% if result.warnings %}<h3>Warnings</h3><ul>{% for w in result.warnings %}<li>{{ w }}</li>{% endfor %}</ul>{% endif %}
+  {% if result.errors %}<h3>Rows not imported</h3><ul class="error">{% for e in result.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

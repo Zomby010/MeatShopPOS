@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Categories{% endblock %}
+{% block content %}
+<h1>Categories</h1>
+<form method="post" class="filters">{% csrf_token %}
+  {{ form.name }} <button class="btn primary">Add category</button>
+  {% for e in form.name.errors %}<span class="error">{{ e }}</span>{% endfor %}
+</form>
+<table class="card"><thead><tr><th>Name</th><th class="num">Products</th><th></th></tr></thead><tbody>
+{% for c in categories %}<tr class="{% if not c.is_active %}muted{% endif %}"><td>{{ c }}</td><td class="num">{{ c.products.count }}</td><td><a href="{% url 'catalogue:category_update' c.pk %}">Edit</a></td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

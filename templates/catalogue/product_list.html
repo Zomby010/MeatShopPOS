@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<div class="head"><h1>Products</h1>{% if is_manager %}<a class="btn primary" href="{% url 'catalogue:product_create' %}">+ New product</a>{% endif %}</div>
+<form class="filters" hx-get="{% url 'catalogue:product_list' %}" hx-target="#rows" hx-trigger="input changed delay:300ms from:input[name=q], change" hx-push-url="true">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search name, SKU or barcode" autofocus>
+  <select name="category"><option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c.pk }}" {% if request.GET.category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c }}</option>{% endfor %}
+  </select>
+  <label class="inline"><input type="checkbox" name="low" value="1" {% if request.GET.low %}checked{% endif %}> Low stock</label>
+  <label class="inline"><input type="checkbox" name="inactive" value="1" {% if request.GET.inactive %}checked{% endif %}> Include inactive</label>
+  <noscript><button class="btn">Filter</button></noscript>
+</form>
+<div id="rows">{% include "catalogue/_product_rows.html" %}</div>
+{% endblock %}

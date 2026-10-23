@@ -1,0 +1,14 @@
+<table><thead><tr><th>When</th>{% if show_product %}<th>Product</th>{% endif %}{% if show_branch %}<th>Branch</th>{% endif %}<th>Type</th><th class="num">Change</th><th class="num">Before</th><th class="num">After</th>{% if is_manager %}<th class="num">Value</th>{% endif %}<th>Reason</th><th>By</th></tr></thead><tbody>
+{% for m in movements %}<tr>
+  <td class="nowrap">{{ m.created_at|date:"d M Y H:i" }}</td>
+  {% if show_product %}<td><a href="{% url 'inventory:product_history' m.product_id %}">{{ m.product }}</a></td>{% endif %}
+  {% if show_branch %}<td>{{ m.branch }}</td>{% endif %}
+  <td><span class="tag t-{{ m.movement_type|lower }}">{{ m.get_movement_type_display }}</span></td>
+  <td class="num {% if m.quantity_change < 0 %}neg{% else %}pos{% endif %}">{% if m.quantity_change > 0 %}+{% endif %}{{ m.quantity_change|floatformat:"-3" }}</td>
+  <td class="num">{{ m.quantity_before|floatformat:"-3" }}</td>
+  <td class="num">{{ m.quantity_after|floatformat:"-3" }}</td>
+  {% if is_manager %}<td class="num">{{ m.value_change|floatformat:2 }}</td>{% endif %}
+  <td>{{ m.reason }}</td>
+  <td>{% if m.created_by %}{{ m.created_by.get_full_name|default:m.created_by.username }}{% else %}system{% endif %}</td>
+</tr>{% empty %}<tr><td colspan="10">No movements.</td></tr>{% endfor %}
+</tbody></table>

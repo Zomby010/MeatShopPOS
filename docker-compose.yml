@@ -1,0 +1,28 @@
+# One branch server: the app plus its own PostgreSQL. Tills on the shop
+# network open http://<this-pc-ip>:8000 in a browser.
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: meatpos
+      POSTGRES_USER: meatpos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DEBUG: "0"
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?set DJANGO_SECRET_KEY in .env}
+      DATABASE_URL: postgres://meatpos:${POSTGRES_PASSWORD:-change-me}@db:5432/meatpos
+      MEATPOS_BRANCH_CODE: ${MEATPOS_BRANCH_CODE:-MAIN}
+
+volumes:
+  pgdata:

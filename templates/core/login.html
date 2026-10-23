@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block public %}
+<div class="card login">
+  <h1>MeatPOS</h1>
+  <form method="post">{% csrf_token %}
+    {% if form.errors %}<div class="msg msg-error">Wrong username or password.</div>{% endif %}
+    <div class="field"><label for="id_username">Username</label>{{ form.username }}</div>
+    <div class="field"><label for="id_password">Password</label>{{ form.password }}</div>
+    <button class="btn primary big" type="submit">Log in</button>
+  </form>
+  <p><a class="btn big" href="{% url 'core:pin_login' %}">Log in with PIN</a></p>
+</div>
+{% endblock %}

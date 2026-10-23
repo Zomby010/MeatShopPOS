@@ -1,0 +1,17 @@
+<table class="card"><thead><tr><th>Product</th><th>Category</th><th class="num">Stock here</th><th class="num">Retail</th><th class="num">Wholesale</th>{% if is_manager %}<th class="num">Avg cost</th>{% endif %}</tr></thead><tbody>
+{% for p in page %}
+<tr class="{% if not p.is_active %}muted{% endif %}">
+  <td><a href="{% url 'catalogue:product_detail' p.pk %}">{{ p.name }}</a>{% if p.sku %}<small class="sub">{{ p.sku }}</small>{% endif %}</td>
+  <td>{{ p.category }}</td>
+  <td class="num {% if p.low_stock_level and p.branch_qty <= p.low_stock_level %}low{% endif %}">{{ p.branch_qty|floatformat:"-3" }} {{ p.unit }}</td>
+  <td class="num">{{ p.retail_price|floatformat:2 }}</td>
+  <td class="num">{{ p.wholesale_price|floatformat:2 }}</td>
+  {% if is_manager %}<td class="num">{{ p.average_cost|floatformat:2 }}</td>{% endif %}
+</tr>
+{% empty %}<tr><td colspan="6">No products match.</td></tr>{% endfor %}
+</tbody></table>
+{% if page.has_other_pages %}<p class="pager">
+  {% if page.has_previous %}<a href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page.previous_page_number }}">← Previous</a>{% endif %}
+  Page {{ page.number }} of {{ page.paginator.num_pages }}
+  {% if page.has_next %}<a href="?{% if q %}q={{ q|urlencode }}&{% endif %}page={{ page.next_page_number }}">Next →</a>{% endif %}
+</p>{% endif %}
