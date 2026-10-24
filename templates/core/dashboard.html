@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>{{ current_branch }}</h1>
+<div class="stats">
+  <div class="card stat"><span>Active products</span><strong>{{ product_count }}</strong></div>
+  {% if is_manager %}<div class="card stat"><span>Stock value at cost</span><strong>KES {{ stock_value|floatformat:2|intcomma }}</strong></div>{% endif %}
+  <div class="card stat {% if low_stock_count %}warn{% endif %}"><span>Low stock items</span><strong>{{ low_stock_count }}</strong></div>
+</div>
+<div class="grid2">
+  <section class="card">
+    <h2>Low stock</h2>
+    <table><tbody>
+      {% for s in low_stock %}<tr><td><a href="{% url 'catalogue:product_detail' s.product.pk %}">{{ s.product }}</a></td><td class="num">{{ s.quantity|floatformat:"-3" }} {{ s.product.unit }}</td></tr>
+      {% empty %}<tr><td>Nothing is below its low-stock level.</td></tr>{% endfor %}
+    </tbody></table>
+    {% if low_stock_count %}<a href="{% url 'catalogue:product_list' %}?low=1">See all</a>{% endif %}
+  </section>
+  <section class="card">
+    <h2>Recent stock movements</h2>
+    {% include "inventory/_movement_table.html" with movements=recent_movements show_product=True %}
+    <a href="{% url 'inventory:movement_list' %}">See all</a>
+  </section>
+</div>
+{% endblock %}

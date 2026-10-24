@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}History: {{ product }}{% endblock %}
+{% block content %}
+<div class="head"><h1>Stock history: {{ product }}</h1><a class="btn" href="{% url 'catalogue:product_detail' product.pk %}">Back to product</a></div>
+<form class="filters" method="get">
+  {{ form.movement_type }} {{ form.date_from }} {{ form.date_to }} {% if is_owner %}{{ form.branch }}{% endif %} {{ form.staff }}
+  <button class="btn">Filter</button>
+</form>
+<div class="card">{% include "inventory/_movement_table.html" with movements=page show_branch=is_owner %}</div>
+{% if page.has_other_pages %}<p class="pager">
+  {% if page.has_previous %}<a href="?{{ querystring }}&page={{ page.previous_page_number }}">← Newer</a>{% endif %}
+  Page {{ page.number }} of {{ page.paginator.num_pages }}
+  {% if page.has_next %}<a href="?{{ querystring }}&page={{ page.next_page_number }}">Older →</a>{% endif %}
+</p>{% endif %}
+{% endblock %}

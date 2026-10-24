@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}PIN login{% endblock %}
+{% block public %}
+<div class="card login wide">
+  <h1>Who is selling?</h1>
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<div class="msg msg-error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+    {% for e in form.pin.errors %}<div class="msg msg-error">{{ e }}</div>{% endfor %}
+    <div class="tiles">
+      {% for s in staff_list %}
+      <label class="tile"><input type="radio" name="staff" value="{{ s.pk }}" {% if form.staff.value|stringformat:"s" == s.pk|stringformat:"s" %}checked{% endif %} required>
+        <strong>{{ s.display_name }}</strong><small>{{ s.branch|default:"All branches" }}</small></label>
+      {% empty %}<p>No staff have a PIN yet. Log in with a password and set PINs under Staff.</p>
+      {% endfor %}
+    </div>
+    <div class="field"><label for="id_pin">PIN</label>{{ form.pin }}</div>
+    <button class="btn primary big" type="submit">Log in</button>
+  </form>
+  <p><a href="{% url 'core:login' %}">Use username and password</a></p>
+</div>
+{% endblock %}

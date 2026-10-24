@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Suppliers{% endblock %}
+{% block content %}
+<div class="head"><h1>Suppliers</h1><a class="btn primary" href="{% url 'parties:supplier_create' %}">+ New supplier</a></div>
+<form class="filters" method="get"><input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search"><button class="btn">Search</button></form>
+<table class="card"><thead><tr><th>Name</th><th>Contact</th><th>Phone</th><th>KRA PIN</th><th></th></tr></thead><tbody>
+{% for s in object_list %}<tr class="{% if not s.is_active %}muted{% endif %}"><td>{{ s.name }}</td><td>{{ s.contact_person }}</td><td>{{ s.phone }}</td><td>{{ s.kra_pin }}</td><td><a href="{% url 'parties:supplier_update' s.pk %}">Edit</a></td></tr>
+{% empty %}<tr><td colspan="5">No suppliers.</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

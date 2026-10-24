@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="head"><h1>Customers</h1><a class="btn primary" href="{% url 'parties:customer_create' %}">+ New customer</a></div>
+<form class="filters" method="get"><input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search name or phone"><button class="btn">Search</button></form>
+<table class="card"><thead><tr><th>Name</th><th>Type</th><th>Phone</th><th class="num">Credit limit</th><th class="num">Balance</th><th></th></tr></thead><tbody>
+{% for c in object_list %}<tr class="{% if not c.is_active %}muted{% endif %}"><td>{{ c.name }}</td><td>{{ c.get_customer_type_display }}</td><td>{{ c.phone }}</td><td class="num">{{ c.credit_limit|floatformat:2 }}</td><td class="num">{{ c.balance|floatformat:2 }}</td><td>{% if is_manager %}<a href="{% url 'parties:customer_update' c.pk %}">Edit</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="6">No customers.</td></tr>{% endfor %}
+</tbody></table>
+{% if page_obj.has_other_pages %}<p class="pager">{% if page_obj.has_previous %}<a href="?q={{ request.GET.q }}&page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %} Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} {% if page_obj.has_next %}<a href="?q={{ request.GET.q }}&page={{ page_obj.next_page_number }}">Next →</a>{% endif %}</p>{% endif %}
+{% endblock %}

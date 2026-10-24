@@ -1,0 +1,51 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MeatPOS{% endblock %} · MeatPOS</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'vendor/htmx.min.js' %}" defer></script>
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+{% if user.is_authenticated %}
+<div class="layout">
+  <nav class="sidebar">
+    <a class="brand" href="{% url 'core:dashboard' %}">MeatPOS</a>
+    <div class="branch">
+      {% if is_owner and switchable_branches %}
+      <form method="post" action="{% url 'core:switch_branch' %}">{% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <select name="branch" onchange="this.form.submit()" aria-label="Branch">
+          {% for b in switchable_branches %}<option value="{{ b.pk }}" {% if b == current_branch %}selected{% endif %}>{{ b.name }}</option>{% endfor %}
+        </select>
+      </form>
+      {% else %}{{ current_branch|default:"No branch" }}{% endif %}
+    </div>
+    <a href="{% url 'core:dashboard' %}">Dashboard</a>
+    <a href="{% url 'catalogue:product_list' %}">Products</a>
+    <a href="{% url 'inventory:movement_list' %}">Stock movements</a>
+    <a href="{% url 'parties:customer_list' %}">Customers</a>
+    {% if is_manager %}
+    <span class="nav-head">Manage</span>
+    <a href="{% url 'catalogue:category_list' %}">Categories</a>
+    <a href="{% url 'catalogue:product_import' %}">Import products</a>
+    <a href="{% url 'parties:supplier_list' %}">Suppliers</a>
+    <a href="{% url 'core:staff_list' %}">Staff</a>
+    {% endif %}
+    {% if is_owner %}<a href="{% url 'core:branch_list' %}">Branches</a>{% endif %}
+    <div class="me">
+      {{ user.get_full_name|default:user.username }}
+      <form method="post" action="{% url 'core:logout' %}">{% csrf_token %}<button class="link">Log out</button></form>
+    </div>
+  </nav>
+  <main>
+    {% for m in messages %}<div class="msg msg-{{ m.tags }}">{{ m }}</div>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+<main class="center">{% block public %}{% endblock %}</main>
+{% endif %}
+</body>
+</html>
